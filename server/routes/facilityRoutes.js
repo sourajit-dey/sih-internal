@@ -39,15 +39,23 @@ async function syncWithPublicAPI() {
       if (!facility) {
         facility = new Facility({
           name: item.name,
-          type: item.type,
+          facilityCode: item.facilityCode || '',
+          type: item.type || 'PHC',
           location: item.location,
-          departments: item.departments
+          address: item.address || '',
+          district: item.district || 'Mumbai',
+          state: item.state || 'Maharashtra',
+          departments: item.departments || ['General Medicine']
         });
         await facility.save();
       } else {
-        facility.type = item.type;
-        facility.location = item.location;
-        facility.departments = item.departments;
+        facility.facilityCode = item.facilityCode || facility.facilityCode;
+        facility.type = item.type || facility.type;
+        facility.location = item.location || facility.location;
+        facility.address = item.address || facility.address;
+        facility.district = item.district || facility.district;
+        facility.state = item.state || facility.state;
+        facility.departments = item.departments || facility.departments;
         await facility.save();
       }
 

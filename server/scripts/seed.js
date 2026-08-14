@@ -27,25 +27,47 @@ async function seedDatabase(customUri) {
   await QueueState.deleteMany({});
   await HistoricalVolume.deleteMany({});
 
-  // 1. Seed Facilities
+  // 1. Seed Facilities (Matching AI Kosh / ABDM National Health Directory)
   const facilities = await Facility.create([
     {
-      name: 'City District Hospital',
+      facilityCode: 'HFR-MH-MUM-001',
+      name: 'Lokmanya Tilak Municipal General Hospital (Sion Hospital)',
       type: 'district_hospital',
-      location: { lat: 19.0760, lng: 72.8777 }, // Central location
+      location: { lat: 19.0360, lng: 72.8600 },
+      address: 'Sion West, Mumbai, Maharashtra 400022',
+      district: 'Mumbai City',
+      state: 'Maharashtra',
       departments: ['General Medicine', 'Pediatrics', 'Orthopedics']
     },
     {
-      name: 'Dharavi PHC East',
+      facilityCode: 'HFR-MH-MUM-002',
+      name: 'Dharavi Urban Health Centre (PHC)',
       type: 'PHC',
-      location: { lat: 19.0850, lng: 72.8900 }, // ~1.5 km Northeast
+      location: { lat: 19.0430, lng: 72.8550 },
+      address: '90 Feet Road, Dharavi, Mumbai, Maharashtra 400017',
+      district: 'Mumbai City',
+      state: 'Maharashtra',
       departments: ['General Medicine', 'Pediatrics']
     },
     {
-      name: 'Sion PHC West',
+      facilityCode: 'HFR-MH-MUM-003',
+      name: 'Kurla Sub-District Health Centre (PHC)',
       type: 'PHC',
-      location: { lat: 19.0680, lng: 72.8630 }, // ~1.8 km Southwest
+      location: { lat: 19.0650, lng: 72.8790 },
+      address: 'SG Barve Marg, Kurla West, Mumbai, Maharashtra 400070',
+      district: 'Mumbai Suburban',
+      state: 'Maharashtra',
       departments: ['General Medicine', 'Pediatrics']
+    },
+    {
+      facilityCode: 'HFR-MH-MUM-004',
+      name: 'Bandra KB Bhabha Municipal Hospital',
+      type: 'district_hospital',
+      location: { lat: 19.0540, lng: 72.8340 },
+      address: 'RK Patkar Marg, Bandra West, Mumbai, Maharashtra 400050',
+      district: 'Mumbai Suburban',
+      state: 'Maharashtra',
+      departments: ['General Medicine', 'Pediatrics', 'Orthopedics']
     }
   ]);
 
