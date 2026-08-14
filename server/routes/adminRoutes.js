@@ -47,6 +47,13 @@ router.get('/dashboard', async (req, res) => {
           totalWaitTime = Math.round((waitingTokensCount * totalAvgMinutes) / Math.max(1, deptDoctors.length));
         }
 
+        // Find current patient inside OPD room
+        const inProgressToken = await Token.findOne({
+          facilityId: facility._id,
+          department: dept,
+          status: 'in_progress'
+        }).populate('patientId');
+
         departmentsData.push({
           department: dept,
           currentTokenNumber: queueState.currentTokenNumber,
@@ -54,6 +61,7 @@ router.get('/dashboard', async (req, res) => {
           activeCount: activeTokensCount,
           waitingCount: waitingTokensCount,
           totalWaitTime,
+          inProgressPatient: inProgressToken ? `${inProgressToken.patientId?.name || 'Patient'} (Token #${inProgressToken.tokenNumber})` : null,
           doctors: deptDoctors.map(d => ({
             id: d._id,
             name: d.name,

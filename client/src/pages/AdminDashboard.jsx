@@ -238,6 +238,11 @@ function AdminDashboard() {
                           <span className="text-lg font-semibold text-ink">
                             {dept.currentTokenNumber > 0 ? `#${dept.currentTokenNumber}` : 'None'}
                           </span>
+                          {dept.inProgressPatient && (
+                            <span className="text-[10px] font-mono text-link block truncate mt-0.5" title={dept.inProgressPatient}>
+                              In Room: {dept.inProgressPatient}
+                            </span>
+                          )}
                         </div>
 
                         <div className="text-center md:text-left">
