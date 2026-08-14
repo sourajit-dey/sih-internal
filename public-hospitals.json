@@ -1,0 +1,20 @@
+[
+  {
+    "name": "City District Hospital",
+    "type": "district_hospital",
+    "location": { "lat": 19.076, "lng": 72.8777 },
+    "departments": ["General Medicine", "Pediatrics", "Orthopedics"]
+  },
+  {
+    "name": "Dharavi PHC East",
+    "type": "PHC",
+    "location": { "lat": 19.085, "lng": 72.89 },
+    "departments": ["General Medicine", "Pediatrics"]
+  },
+  {
+    "name": "Sion PHC West",
+    "type": "PHC",
+    "location": { "lat": 19.068, "lng": 72.863 },
+    "departments": ["General Medicine", "Pediatrics"]
+  }
+]
