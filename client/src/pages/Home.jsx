@@ -37,9 +37,9 @@ function Home() {
       try {
         const data = await api.getFacilities();
         if (data.length > 0) {
-          // Use default user coordinates (Sion area: 19.068, 72.863) for instant loading without browser popups
-          const userLat = 19.068;
-          const userLng = 72.863;
+          // Default user location: Om Dayal Group of Institutions (Birshibpur, Uluberia: 22.4705, 88.1025)
+          const userLat = 22.4705;
+          const userLng = 88.1025;
           setUserLocation({ lat: userLat, lng: userLng });
           
           const sorted = data.map(f => {

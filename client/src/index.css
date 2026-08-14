@@ -48,7 +48,17 @@
   --shadow-level-5: 0px 1px 1px #00000005, 0px 8px 16px -4px #0000000a, 0px 24px 32px -8px #0000000f, 0 0 0 1px #00000014;
 }
 
-body {
+/* Hide scrollbar for Webkit browsers (Chrome, Safari, Opera) */
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+  background: transparent;
+}
+
+/* Hide scrollbar for Firefox, IE and Edge */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
   background-color: var(--color-canvas-soft);
   color: var(--color-ink);
   font-family: var(--font-sans);

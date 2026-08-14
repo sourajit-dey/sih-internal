@@ -27,46 +27,46 @@ async function seedDatabase(customUri) {
   await QueueState.deleteMany({});
   await HistoricalVolume.deleteMany({});
 
-  // 1. Seed Facilities (Matching AI Kosh / ABDM National Health Directory)
+  // 1. Seed Facilities (Birshibpur / Uluberia, Howrah Dataset near Om Dayal College)
   const facilities = await Facility.create([
     {
-      facilityCode: 'HFR-MH-MUM-001',
-      name: 'Lokmanya Tilak Municipal General Hospital (Sion Hospital)',
+      facilityCode: 'HFR-WB-HWH-001',
+      name: 'Uluberia Sub-Divisional Hospital',
       type: 'district_hospital',
-      location: { lat: 19.0360, lng: 72.8600 },
-      address: 'Sion West, Mumbai, Maharashtra 400022',
-      district: 'Mumbai City',
-      state: 'Maharashtra',
+      location: { lat: 22.4780, lng: 88.1090 },
+      address: 'Uluberia Station Road, Howrah, West Bengal 711315',
+      district: 'Howrah',
+      state: 'West Bengal',
       departments: ['General Medicine', 'Pediatrics', 'Orthopedics']
     },
     {
-      facilityCode: 'HFR-MH-MUM-002',
-      name: 'Dharavi Urban Health Centre (PHC)',
+      facilityCode: 'HFR-WB-HWH-002',
+      name: 'Birshibpur Primary Health Centre (PHC)',
       type: 'PHC',
-      location: { lat: 19.0430, lng: 72.8550 },
-      address: '90 Feet Road, Dharavi, Mumbai, Maharashtra 400017',
-      district: 'Mumbai City',
-      state: 'Maharashtra',
+      location: { lat: 22.4650, lng: 88.0980 },
+      address: 'Birshibpur NH-16 Junction, Uluberia, Howrah, West Bengal 711316',
+      district: 'Howrah',
+      state: 'West Bengal',
       departments: ['General Medicine', 'Pediatrics']
     },
     {
-      facilityCode: 'HFR-MH-MUM-003',
-      name: 'Kurla Sub-District Health Centre (PHC)',
+      facilityCode: 'HFR-WB-HWH-003',
+      name: 'Fuleswar Rural Hospital (PHC)',
       type: 'PHC',
-      location: { lat: 19.0650, lng: 72.8790 },
-      address: 'SG Barve Marg, Kurla West, Mumbai, Maharashtra 400070',
-      district: 'Mumbai Suburban',
-      state: 'Maharashtra',
+      location: { lat: 22.4860, lng: 88.1220 },
+      address: 'Fuleswar Station Road, Uluberia, Howrah, West Bengal 711316',
+      district: 'Howrah',
+      state: 'West Bengal',
       departments: ['General Medicine', 'Pediatrics']
     },
     {
-      facilityCode: 'HFR-MH-MUM-004',
-      name: 'Bandra KB Bhabha Municipal Hospital',
-      type: 'district_hospital',
-      location: { lat: 19.0540, lng: 72.8340 },
-      address: 'RK Patkar Marg, Bandra West, Mumbai, Maharashtra 400050',
-      district: 'Mumbai Suburban',
-      state: 'Maharashtra',
+      facilityCode: 'HFR-WB-HWH-004',
+      name: 'Bagnan Rural Hospital & PHC',
+      type: 'PHC',
+      location: { lat: 22.4610, lng: 87.9730 },
+      address: 'Bagnan College Road, Howrah, West Bengal 711303',
+      district: 'Howrah',
+      state: 'West Bengal',
       departments: ['General Medicine', 'Pediatrics', 'Orthopedics']
     }
   ]);
