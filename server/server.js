@@ -65,6 +65,16 @@ async function startServer() {
       await mongoose.connect(MONGODB_URI);
       console.log('Connected to MongoDB database.');
       dbConnected = true;
+
+      // Auto-seed if database is empty
+      const Facility = require('./models/Facility');
+      const count = await Facility.countDocuments();
+      if (count === 0) {
+        console.log('Database is empty. Auto-seeding initial demo data...');
+        const seedDatabase = require('./scripts/seed');
+        await seedDatabase(MONGODB_URI);
+        console.log('Auto-seeding complete.');
+      }
     } catch (error) {
       console.error('Failed to connect to external MongoDB:', error.message);
     }

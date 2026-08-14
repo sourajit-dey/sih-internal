@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const https = require('https');
 const Facility = require('../models/Facility');
 const Doctor = require('../models/Doctor');
 const queueController = require('../controllers/queueController');
@@ -7,19 +8,33 @@ const queueController = require('../controllers/queueController');
 // URL of the public hospital registry directory
 const PUBLIC_API_URL = 'https://raw.githubusercontent.com/sourajit-dey/sih-internal/main/public-hospitals.json';
 
+// Helper: Universal HTTPS GET for JSON (works on all Node.js versions)
+function fetchJSON(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        return reject(new Error(`HTTP Status ${res.statusCode}`));
+      }
+      let body = '';
+      res.on('data', chunk => { body += chunk; });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(body));
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
 // Helper: Sync facilities from public registry to MongoDB
 async function syncWithPublicAPI() {
   try {
-    console.log(`[API Sync] Fetching public hospital directory from: ${PUBLIC_API_URL}`);
-    const response = await fetch(PUBLIC_API_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch public registry: ${response.status} ${response.statusText}`);
-    }
-    const publicFacilities = await response.json();
-    console.log(`[API Sync] Loaded ${publicFacilities.length} facilities from public registry.`);
+    const publicFacilities = await fetchJSON(PUBLIC_API_URL);
+    if (!Array.isArray(publicFacilities) || publicFacilities.length === 0) return;
 
     for (const item of publicFacilities) {
-      // Find or create facility in DB by name
       let facility = await Facility.findOne({ name: item.name });
       if (!facility) {
         facility = new Facility({
@@ -29,19 +44,15 @@ async function syncWithPublicAPI() {
           departments: item.departments
         });
         await facility.save();
-        console.log(`[API Sync] Created new facility in DB: ${facility.name}`);
       } else {
-        // Update attributes if changed
         facility.type = item.type;
         facility.location = item.location;
         facility.departments = item.departments;
         await facility.save();
       }
 
-      // Check if this facility has doctors. If not, auto-generate doctors so it is functional!
       const docCount = await Doctor.countDocuments({ facilityId: facility._id });
       if (docCount === 0) {
-        console.log(`[API Sync] Auto-generating mock doctors for new facility: ${facility.name}`);
         const mockDocNames = {
           "General Medicine": ["Dr. Rajesh Patel", "Dr. Sunita Rao"],
           "Pediatrics": ["Dr. Amit Sharma", "Dr. Neha Verma"],
@@ -62,7 +73,7 @@ async function syncWithPublicAPI() {
       }
     }
   } catch (error) {
-    console.warn('[API Sync Warn] Could not sync with public hospital API. Falling back to local MongoDB cache:', error.message);
+    console.warn('[API Sync Warn] Could not sync with public hospital API. Serving cached database records:', error.message);
   }
 }
 
