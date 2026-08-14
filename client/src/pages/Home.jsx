@@ -3,6 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { MapPin, Clock, ArrowRight, CheckCircle, AlertTriangle, ChevronDown, Sparkles } from 'lucide-react';
 
+// Helper: Calculate distance in km between two lat/lng points
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return parseFloat((R * c).toFixed(1));
+}
+
 function Home() {
   const navigate = useNavigate();
   const [facilities, setFacilities] = useState([]);
@@ -16,18 +29,57 @@ function Home() {
   const [error, setError] = useState('');
   const [waitEstimate, setWaitEstimate] = useState(null);
   const [redirectSuggestions, setRedirectSuggestions] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
 
-  // Fetch facilities on load
+  // Fetch facilities on load and sort by user proximity
   useEffect(() => {
     async function loadFacilities() {
       try {
         const data = await api.getFacilities();
-        setFacilities(data);
         if (data.length > 0) {
-          setSelectedFacilityId(data[0]._id);
-          setDepartments(data[0].departments || []);
-          if (data[0].departments?.length > 0) {
-            setSelectedDepartment(data[0].departments[0]);
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                setUserLocation({ lat: latitude, lng: longitude });
+                const sorted = data.map(f => {
+                  const dist = calculateDistance(latitude, longitude, f.location.lat, f.location.lng);
+                  return { ...f, distance: dist };
+                }).sort((a, b) => a.distance - b.distance);
+                
+                setFacilities(sorted);
+                setSelectedFacilityId(sorted[0]._id);
+                setDepartments(sorted[0].departments || []);
+                if (sorted[0].departments?.length > 0) {
+                  setSelectedDepartment(sorted[0].departments[0]);
+                }
+              },
+              (err) => {
+                console.warn('Geolocation denied or failed. Simulating nearby user.', err);
+                // Fallback simulation: place user near Sion PHC (19.068, 72.863)
+                const mockUserLat = 19.068;
+                const mockUserLng = 72.863;
+                setUserLocation({ lat: mockUserLat, lng: mockUserLng });
+                const sorted = data.map(f => {
+                  const dist = calculateDistance(mockUserLat, mockUserLng, f.location.lat, f.location.lng);
+                  return { ...f, distance: dist };
+                }).sort((a, b) => a.distance - b.distance);
+                
+                setFacilities(sorted);
+                setSelectedFacilityId(sorted[0]._id);
+                setDepartments(sorted[0].departments || []);
+                if (sorted[0].departments?.length > 0) {
+                  setSelectedDepartment(sorted[0].departments[0]);
+                }
+              }
+            );
+          } else {
+            setFacilities(data);
+            setSelectedFacilityId(data[0]._id);
+            setDepartments(data[0].departments || []);
+            if (data[0].departments?.length > 0) {
+              setSelectedDepartment(data[0].departments[0]);
+            }
           }
         }
       } catch (err) {
@@ -172,7 +224,15 @@ function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Custom Styled Dropdowns */}
               <div>
-                <label className="block text-xs font-mono text-body uppercase tracking-wider mb-2">Select Facility</label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-mono text-body uppercase tracking-wider">Select Facility</label>
+                  {userLocation && (
+                    <span className="text-[10px] font-mono text-link flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-link animate-pulse" />
+                      Proximity Sorted
+                    </span>
+                  )}
+                </div>
                 <div className="relative">
                   <select
                     value={selectedFacilityId}
@@ -181,7 +241,7 @@ function Home() {
                   >
                     {facilities.map(f => (
                       <option key={f._id} value={f._id}>
-                        {f.name} ({f.type === 'district_hospital' ? 'Hospital' : 'PHC'})
+                        {f.name} ({f.type === 'district_hospital' ? 'Hospital' : 'PHC'}){f.distance !== undefined ? ` [${f.distance} km]` : ''}
                       </option>
                     ))}
                   </select>
