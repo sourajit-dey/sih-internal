@@ -31,55 +31,27 @@ function Home() {
   const [redirectSuggestions, setRedirectSuggestions] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
 
-  // Fetch facilities on load and sort by user proximity
+  // Fetch facilities on load
   useEffect(() => {
     async function loadFacilities() {
       try {
         const data = await api.getFacilities();
         if (data.length > 0) {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                setUserLocation({ lat: latitude, lng: longitude });
-                const sorted = data.map(f => {
-                  const dist = calculateDistance(latitude, longitude, f.location.lat, f.location.lng);
-                  return { ...f, distance: dist };
-                }).sort((a, b) => a.distance - b.distance);
-                
-                setFacilities(sorted);
-                setSelectedFacilityId(sorted[0]._id);
-                setDepartments(sorted[0].departments || []);
-                if (sorted[0].departments?.length > 0) {
-                  setSelectedDepartment(sorted[0].departments[0]);
-                }
-              },
-              (err) => {
-                console.warn('Geolocation denied or failed. Simulating nearby user.', err);
-                // Fallback simulation: place user near Sion PHC (19.068, 72.863)
-                const mockUserLat = 19.068;
-                const mockUserLng = 72.863;
-                setUserLocation({ lat: mockUserLat, lng: mockUserLng });
-                const sorted = data.map(f => {
-                  const dist = calculateDistance(mockUserLat, mockUserLng, f.location.lat, f.location.lng);
-                  return { ...f, distance: dist };
-                }).sort((a, b) => a.distance - b.distance);
-                
-                setFacilities(sorted);
-                setSelectedFacilityId(sorted[0]._id);
-                setDepartments(sorted[0].departments || []);
-                if (sorted[0].departments?.length > 0) {
-                  setSelectedDepartment(sorted[0].departments[0]);
-                }
-              }
-            );
-          } else {
-            setFacilities(data);
-            setSelectedFacilityId(data[0]._id);
-            setDepartments(data[0].departments || []);
-            if (data[0].departments?.length > 0) {
-              setSelectedDepartment(data[0].departments[0]);
-            }
+          // Use default user coordinates (Sion area: 19.068, 72.863) for instant loading without browser popups
+          const userLat = 19.068;
+          const userLng = 72.863;
+          setUserLocation({ lat: userLat, lng: userLng });
+          
+          const sorted = data.map(f => {
+            const dist = calculateDistance(userLat, userLng, f.location.lat, f.location.lng);
+            return { ...f, distance: dist };
+          }).sort((a, b) => a.distance - b.distance);
+          
+          setFacilities(sorted);
+          setSelectedFacilityId(sorted[0]._id);
+          setDepartments(sorted[0].departments || []);
+          if (sorted[0].departments?.length > 0) {
+            setSelectedDepartment(sorted[0].departments[0]);
           }
         }
       } catch (err) {
