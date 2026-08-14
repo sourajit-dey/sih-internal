@@ -1,0 +1,25 @@
+# node_modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# local environment files
+.env
+server/.env
+client/.env
+
+# build outputs
+client/dist/
+
+# system and logs
+*.log
+.DS_Store
+Thumbs.db
+.gemini/
+
+# Agent skills, instructions, and locks (hackathon metadata)
+.agents/
+.kilocode/
+skills-lock.json
+AGENTS.md
+DESIGN.md
