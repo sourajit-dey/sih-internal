@@ -62,12 +62,26 @@ router.get('/dashboard', async (req, res) => {
         });
       }
 
+      // Generate mock bed & stock data based on facility type for dashboard polish (P2 requirement)
+      let mockBeds = { total: 15, available: 11 };
+      let mockStock = { paracetamol: 'Adequate', oxygen: 'Adequate', vaccines: 'Low' };
+
+      if (facility.type === 'district_hospital') {
+        mockBeds = { total: 120, available: 18 };
+        mockStock = { paracetamol: 'Critical', oxygen: 'Adequate', vaccines: 'Critical' };
+      } else if (facility.name.includes('East')) {
+        mockBeds = { total: 10, available: 4 };
+        mockStock = { paracetamol: 'Adequate', oxygen: 'Adequate', vaccines: 'Adequate' };
+      }
+
       dashboardData.push({
         facilityId: facility._id,
         name: facility.name,
         type: facility.type,
         location: facility.location,
-        departments: departmentsData
+        departments: departmentsData,
+        beds: mockBeds,
+        stock: mockStock
       });
     }
 

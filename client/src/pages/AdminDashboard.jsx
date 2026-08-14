@@ -196,6 +196,28 @@ function AdminDashboard() {
                   </span>
                 </div>
 
+                {/* Bed & Stock Polish Indicators (P2 requirement) */}
+                {facility.beds && facility.stock && (
+                  <div className="bg-canvas-soft-2 border-b border-hairline px-6 py-2.5 flex flex-wrap gap-x-6 gap-y-2 text-xs text-body font-mono">
+                    <div className="flex items-center">
+                      <span className="text-mute uppercase text-[9px] mr-1.5 font-semibold">Beds:</span>
+                      <span className="text-ink font-sans font-medium">{facility.beds.available} / {facility.beds.total} available</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-mute uppercase text-[9px] mr-1.5 font-semibold">Paracetamol:</span>
+                      <span className={`font-sans font-medium ${facility.stock.paracetamol === 'Critical' ? 'text-error-deep font-semibold' : 'text-ink'}`}>{facility.stock.paracetamol}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-mute uppercase text-[9px] mr-1.5 font-semibold">Oxygen:</span>
+                      <span className={`font-sans font-medium ${facility.stock.oxygen === 'Low' ? 'text-error-deep font-semibold' : 'text-ink'}`}>{facility.stock.oxygen}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-mute uppercase text-[9px] mr-1.5 font-semibold">Vaccines:</span>
+                      <span className={`font-sans font-medium ${facility.stock.vaccines === 'Critical' ? 'text-error-deep font-semibold' : 'text-ink'}`}>{facility.stock.vaccines}</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Departments Row */}
                 <div className="divide-y divide-hairline">
                   {facility.departments.map((dept) => (
