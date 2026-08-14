@@ -68,16 +68,16 @@ function AdminDashboard() {
     if (!fac) return;
 
     // Validate department selection
-    const deptExists = fac.departments.some(d => d.department === selectedDept);
+    const deptExists = fac.departments?.some(d => d.department === selectedDept);
     let currentDept = selectedDept;
-    if (!deptExists && fac.departments.length > 0) {
+    if (!deptExists && fac.departments?.length > 0) {
       currentDept = fac.departments[0].department;
       setSelectedDept(currentDept);
     }
 
     // Update doctor selection based on department
-    const deptData = fac.departments.find(d => d.department === currentDept);
-    if (deptData && deptData.doctors.length > 0) {
+    const deptData = fac.departments?.find(d => d.department === currentDept);
+    if (deptData && deptData.doctors?.length > 0) {
       const docExists = deptData.doctors.some(doc => doc.id === selectedDocId);
       if (!docExists) {
         setSelectedDocId(deptData.doctors[0].id);
@@ -134,7 +134,7 @@ function AdminDashboard() {
 
   // Get list of active doctors for form selection
   const selectedFacData = data.find(f => f.facilityId === selectedFacilityId);
-  const selectedDeptData = selectedFacData?.departments.find(d => d.department === selectedDept);
+  const selectedDeptData = selectedFacData?.departments?.find(d => d.department === selectedDept);
   const currentDoctors = selectedDeptData?.doctors || [];
 
   return (
@@ -227,7 +227,7 @@ function AdminDashboard() {
                         <span className="text-sm font-semibold text-ink">{dept.department}</span>
                         <div className="flex items-center gap-1.5 text-xs text-mute mt-1">
                           <Layers className="w-3.5 h-3.5" />
-                          <span>{dept.doctors.length} Doctors</span>
+                          <span>{dept.doctors?.length || 0} Doctors</span>
                         </div>
                       </div>
 
@@ -297,7 +297,7 @@ function AdminDashboard() {
                     onChange={handleDeptChange}
                     className="w-full bg-canvas text-ink border border-hairline pl-4 pr-10 rounded-sm text-sm h-10 outline-none focus:border-hairline-strong transition appearance-none cursor-pointer"
                   >
-                    {selectedFacData?.departments.map(d => (
+                    {(selectedFacData?.departments || []).map(d => (
                       <option key={d.department} value={d.department}>{d.department}</option>
                     ))}
                   </select>
@@ -313,7 +313,7 @@ function AdminDashboard() {
                     onChange={(e) => setSelectedDocId(e.target.value)}
                     className="w-full bg-canvas text-ink border border-hairline pl-4 pr-10 rounded-sm text-sm h-10 outline-none focus:border-hairline-strong transition appearance-none cursor-pointer"
                   >
-                    {currentDoctors.map(doc => (
+                    {(currentDoctors || []).map(doc => (
                       <option key={doc.id} value={doc.id}>{doc.name}</option>
                     ))}
                   </select>
